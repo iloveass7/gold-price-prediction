@@ -5,7 +5,7 @@ import numpy as np
 df = pd.read_csv(r'D:\Gold Price Predictor\Dataset\master_training_data.csv', parse_dates=['Date'], index_col='Date')
 
 # 2. Define Window Parameters [cite: 76, 99]
-LOOKBACK = 30  # Number of past days to look at
+LOOKBACK = 7  # Number of past days to look at
 FEATURES = 4   # Gold Log Returns, Rate Log Returns, Inflation, Wedding Flag
 
 def create_sequences(data, lookback):
@@ -32,3 +32,10 @@ y_train, y_test = y[:train_size], y[train_size:]
 print(f"Windowing Complete.")
 print(f"Input Shape (X_train): {X_train.shape}")  # Should be [Samples, 30, 4]
 print(f"Target Shape (y_train): {y_train.shape}")
+
+np.save(r'D:\Gold Price Predictor\Models\X_train.npy', X_train)
+np.save(r'D:\Gold Price Predictor\Models\X_test.npy', X_test)
+np.save(r'D:\Gold Price Predictor\Models\y_train.npy', y_train)
+np.save(r'D:\Gold Price Predictor\Models\y_test.npy', y_test)
+
+print("Tensors saved to disk: X_train.npy, X_test.npy, y_train.npy, y_test.npy")
