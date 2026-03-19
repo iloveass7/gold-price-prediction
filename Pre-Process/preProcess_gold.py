@@ -35,6 +35,15 @@ final_df.dropna(inplace=True)
 # 7. Calculate Log Returns (as per your methodology) [cite: 72, 105]
 final_df['Log_Returns'] = np.log(final_df['traditional'] / final_df['traditional'].shift(1))
 
+# 8. Remove Non-Trading Days (weekends, holidays, unchanged prices)
+# Days where price = previous day's price produce Log_Return = 0, which is noise.
+# These make up ~40% of the dataset and cause the model to learn "predict zero".
+before_count = len(final_df)
+final_df = final_df[final_df['Log_Returns'] != 0]
+after_count = len(final_df)
+print(f"Removed {before_count - after_count} non-trading days ({(before_count - after_count)/before_count*100:.1f}%)")
+print(f"Remaining trading days: {after_count}")
+
 # Save the cleaned daily data for your LSTM training
-final_df.to_csv('cleaned_daily_gold.csv')
-print("Successfully created cleaned_daily_gold.csv with daily frequency.")
+final_df.to_csv(r'D:\Gold Price Predictor\Dataset\cleaned_daily_gold.csv')
+print("Successfully created cleaned_daily_gold.csv with trading days only.")
