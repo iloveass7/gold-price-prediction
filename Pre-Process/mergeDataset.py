@@ -29,23 +29,26 @@ def is_wedding_season(date):
 
 merged_df['Wedding_Season_Flag'] = merged_df.index.to_series().apply(is_wedding_season)
 
-# 5. Select Final Features for the Multivariate LSTM
-# We use Log Returns for prices and rates to ensure stationarity
+# ===================== 5. Select Final Features =====================
+# Using only base features (no derivatives) for honest model evaluation
 final_features = [
-    'Log_Returns',            # Gold price volatility
+    'Log_Returns',            # Gold price volatility (also the target)
     'Rate_Log_Returns',       # Currency exchange volatility
     'Daily_Inflation_Scaled', # Daily interpolated inflation
-    'Wedding_Season_Flag'     # Seasonal demand shock
+    'Wedding_Season_Flag',    # Seasonal demand shock
 ]
 
 training_df = merged_df[final_features].copy()
 
 # 6. Final Data Integrity Check
-# Drop any remaining NaNs (usually the very first row due to Log Returns)
+before = len(training_df)
 training_df.dropna(inplace=True)
+print(f"Dropped {before - len(training_df)} rows with NaN")
 
-# 7. Export the Master Dataset
+# ===================== 8. Export (RAW, unscaled) =====================
+# Scaling is done in tensor_generator.py AFTER splitting to prevent data leakage
 training_df.to_csv(r'D:\Gold Price Predictor\Dataset\master_training_data.csv')
 
-print("Successfully created master_training_data.csv")
+print(f"\nSuccessfully created master_training_data.csv (unscaled)")
 print(f"Total entries from {training_df.index.min().date()} to {training_df.index.max().date()}: {len(training_df)}")
+print(f"Features ({len(final_features)}): {final_features}")
